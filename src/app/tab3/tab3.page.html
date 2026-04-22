@@ -1,0 +1,191 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      Edit & Delete Item
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleHelp()">
+        <ion-icon name="help-circle" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Help Widget -->
+  <ion-card *ngIf="showHelp" color="light">
+    <ion-card-header>
+      <ion-card-title>Help: Edit & Delete</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Search:</strong> Enter the exact item name and tap "Search" to find an item.</p>
+      <p><strong>Edit:</strong> After finding an item, tap "Edit Item" to modify it, then "Save Changes".</p>
+      <p><strong>Delete:</strong> After finding an item, tap "Delete Item" to remove it permanently.</p>
+      <p><strong>Protection:</strong> The item "Laptop" cannot be deleted (server protected).</p>
+      <ion-button expand="block" (click)="toggleHelp()" size="small">Close Help</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Message Toast -->
+  <ion-toast
+    [isOpen]="message !== ''"
+    [message]="message"
+    [color]="messageType === 'success' ? 'success' : 'danger'"
+    duration="5000"
+    (didDismiss)="message = ''">
+  </ion-toast>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+    <p>Processing...</p>
+  </div>
+
+  <div class="ion-padding">
+    <!-- Search Section -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Search Item by Name</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Item Name</ion-label>
+          <ion-input [(ngModel)]="searchName" placeholder="Enter exact item name"></ion-input>
+        </ion-item>
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" (click)="searchItem()" [disabled]="isLoading" color="primary">
+              <ion-icon name="search" slot="start"></ion-icon>
+              Search
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" (click)="clearSearch()" fill="outline" [disabled]="isLoading">
+              Clear
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Found Item Display (View Mode) -->
+    <ion-card *ngIf="foundItem && !isEditing" color="light">
+      <ion-card-header>
+        <ion-item lines="none">
+          <ion-icon name="cube" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ foundItem.item_name }}</h2>
+            <p>ID: {{ foundItem.item_id }} | {{ foundItem.category }}</p>
+          </ion-label>
+          <ion-badge [color]="getStockStatusColor(foundItem.stock_status)" slot="end">
+            {{ foundItem.stock_status }}
+          </ion-badge>
+        </ion-item>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <p><strong>Price:</strong> ${{ foundItem.price }}</p>
+              <p><strong>Quantity:</strong> {{ foundItem.quantity }}</p>
+            </ion-col>
+            <ion-col size="6">
+              <p><strong>Supplier:</strong> {{ foundItem.supplier_name }}</p>
+              <p *ngIf="foundItem.featured_item > 0">
+                <ion-icon name="star" color="warning"></ion-icon> Priority: {{ foundItem.featured_item }}
+              </p>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="foundItem.special_note">
+            <ion-col>
+              <p><strong>Note:</strong> {{ foundItem.special_note }}</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" (click)="startEdit()" color="warning">
+              <ion-icon name="create" slot="start"></ion-icon>
+              Edit Item
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" (click)="deleteItem()" color="danger">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Delete Item
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Edit Form -->
+    <ion-card *ngIf="isEditing && foundItem">
+      <ion-card-header color="warning">
+        <ion-card-title>Edit Item: {{ foundItem.item_name }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">Item Name (read-only key)</ion-label>
+            <ion-input [value]="editItem.item_name" readonly disabled></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Category *</ion-label>
+            <ion-select [(ngModel)]="editItem.category" interface="popover">
+              <ion-select-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Quantity *</ion-label>
+            <ion-input type="number" [(ngModel)]="editItem.quantity" min="0" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Price ($) *</ion-label>
+            <ion-input type="number" [(ngModel)]="editItem.price" min="0" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Supplier Name *</ion-label>
+            <ion-input [(ngModel)]="editItem.supplier_name" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Stock Status *</ion-label>
+            <ion-select [(ngModel)]="editItem.stock_status" interface="popover">
+              <ion-select-option *ngFor="let status of stockStatuses" [value]="status">{{ status }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Featured Item Priority</ion-label>
+            <ion-input type="number" [(ngModel)]="editItem.featured_item" min="0"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Special Note</ion-label>
+            <ion-textarea [(ngModel)]="editItem.special_note" rows="2"></ion-textarea>
+          </ion-item>
+        </ion-list>
+
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" (click)="updateItem()" [disabled]="isLoading" color="success">
+              <ion-icon name="save" slot="start"></ion-icon>
+              Save Changes
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" (click)="cancelEdit()" fill="outline" [disabled]="isLoading">
+              Cancel
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

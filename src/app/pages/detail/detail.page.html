@@ -1,0 +1,168 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Item Detail</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+    <p>Loading item...</p>
+  </div>
+
+  <!-- Message -->
+  <ion-toast
+    [isOpen]="message !== ''"
+    [message]="message"
+    [color]="messageType === 'success' ? 'success' : 'danger'"
+    duration="5000"
+    (didDismiss)="message = ''">
+  </ion-toast>
+
+  <!-- View Mode -->
+  <div *ngIf="!isLoading && item && !isEditing">
+    <ion-card>
+      <ion-card-header>
+        <ion-item lines="none">
+          <ion-icon [name]="getCategoryIcon(item.category)" slot="start" size="large" color="primary"></ion-icon>
+          <ion-label>
+            <h1><strong>{{ item.item_name }}</strong></h1>
+            <p>ID: {{ item.item_id }} | {{ item.category }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-badge [color]="getStockStatusColor(item.stock_status)" class="ion-margin-start">
+          {{ item.stock_status }}
+        </ion-badge>
+        <ion-badge color="warning" *ngIf="item.featured_item > 0" class="ion-margin-start">
+          <ion-icon name="star"></ion-icon> Featured
+        </ion-badge>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>Price</h3>
+              <p>${{ item.price }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Quantity</h3>
+              <p>{{ item.quantity }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Supplier</h3>
+              <p>{{ item.supplier_name }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="item.featured_item > 0">
+            <ion-label>
+              <h3>Featured Priority</h3>
+              <p>{{ item.featured_item }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="item.special_note">
+            <ion-label>
+              <h3>Special Note</h3>
+              <p>{{ item.special_note }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" (click)="startEdit()" color="warning">
+              <ion-icon name="create" slot="start"></ion-icon>
+              Edit
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" (click)="deleteItem()" color="danger">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Delete
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Edit Mode -->
+  <div *ngIf="!isLoading && isEditing">
+    <ion-card>
+      <ion-card-header color="warning">
+        <ion-card-title>Edit Item</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">Item Name (read-only key)</ion-label>
+            <ion-input [value]="editForm.item_name" readonly disabled></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Category *</ion-label>
+            <ion-select [(ngModel)]="editForm.category" interface="popover">
+              <ion-select-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Quantity *</ion-label>
+            <ion-input type="number" [(ngModel)]="editForm.quantity" min="0" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Price ($) *</ion-label>
+            <ion-input type="number" [(ngModel)]="editForm.price" min="0" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Supplier Name *</ion-label>
+            <ion-input [(ngModel)]="editForm.supplier_name" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Stock Status *</ion-label>
+            <ion-select [(ngModel)]="editForm.stock_status" interface="popover">
+              <ion-select-option *ngFor="let status of stockStatuses" [value]="status">{{ status }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Featured Item Priority</ion-label>
+            <ion-input type="number" [(ngModel)]="editForm.featured_item" min="0"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Special Note</ion-label>
+            <ion-textarea [(ngModel)]="editForm.special_note" rows="2"></ion-textarea>
+          </ion-item>
+        </ion-list>
+
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" (click)="saveEdit()" color="success" [disabled]="isLoading">
+              <ion-icon name="save" slot="start"></ion-icon>
+              Save
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" (click)="cancelEdit()" fill="outline" [disabled]="isLoading">
+              Cancel
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

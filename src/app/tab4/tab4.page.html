@@ -1,0 +1,198 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      Privacy & Security
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleHelp()">
+        <ion-icon name="help-circle" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Help Widget -->
+  <ion-card *ngIf="showHelp" color="light">
+    <ion-card-header>
+      <ion-card-title>Help: Privacy & Security</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>This page explains the privacy and security considerations for this mobile inventory application.</p>
+      <p>Review each section to understand how data is protected and what security measures are in place.</p>
+      <ion-button expand="block" (click)="toggleHelp()" size="small">Close Help</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <h1 class="ion-text-center ion-margin-bottom">
+    <ion-icon name="shield-checkmark" color="success"></ion-icon>
+    Privacy & Security Analysis (ULO 4)
+  </h1>
+
+  <!-- Section 1: API Security -->
+  <ion-card>
+    <ion-card-header color="primary">
+      <ion-card-title>
+        <ion-icon name="lock-closed" slot="start"></ion-icon>
+        1. RESTful API Security
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        This application communicates with a remote server via HTTPS, ensuring that all data transmitted between the
+        mobile app and the server is encrypted. This prevents Man-in-the-Middle (MITM) attacks where attackers could
+        intercept sensitive inventory data.
+      </p>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>HTTPS encryption for all API calls</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>URL encoding for item names in API paths</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Proper HTTP methods (GET, POST, PUT, DELETE)</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Section 2: Input Validation -->
+  <ion-card>
+    <ion-card-header color="tertiary">
+      <ion-card-title>
+        <ion-icon name="shield" slot="start"></ion-icon>
+        2. Input Validation & XSS Prevention
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Angular's built-in templating engine automatically sanitizes values bound to the DOM, effectively preventing
+        Cross-Site Scripting (XSS) attacks. TypeScript interfaces enforce strict data types, ensuring numeric fields
+        (Price and Quantity) only accept valid numbers.
+      </p>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>TypeScript type checking for all data fields</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Required field validation before API calls</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Numeric validation for price and quantity</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Angular sanitization prevents XSS attacks</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Section 3: Data Privacy -->
+  <ion-card>
+    <ion-card-header color="success">
+      <ion-card-title>
+        <ion-icon name="eye-off" slot="start"></ion-icon>
+        3. Data Privacy Considerations
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        The application handles sensitive inventory data including supplier information and pricing.
+        Privacy measures ensure that this business data is only accessible to authorized users and
+        is properly managed during transmission and storage.
+      </p>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>No local storage of sensitive data</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Server-side auto-increment for IDs (prevents tampering)</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Protected items (e.g., "Laptop") cannot be deleted</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Section 4: Mobile Security -->
+  <ion-card>
+    <ion-card-header color="warning">
+      <ion-card-title>
+        <ion-icon name="phone-portrait" slot="start"></ion-icon>
+        4. Mobile-Specific Security
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Mobile applications face unique security challenges including device theft, unsecured Wi-Fi networks,
+        and platform-specific vulnerabilities. Ionic/Capacitor provides security features to address these concerns.
+      </p>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Cross-platform security with Ionic framework</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>Error handling without exposing sensitive information</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+          <ion-label>User confirmation for destructive actions (delete)</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Section 5: Best Practices -->
+  <ion-card>
+    <ion-card-header color="danger">
+      <ion-card-title>
+        <ion-icon name="warning" slot="start"></ion-icon>
+        5. Security Best Practices Implemented
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <h4>Authentication & Authorization</h4>
+            <p>Server validates all requests and enforces deletion protections on critical records.</p>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <h4>Data Validation</h4>
+            <p>Both client-side and server-side validation ensure data integrity.</p>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <h4>Error Handling</h4>
+            <p>Graceful error handling prevents application crashes and information leakage.</p>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <h4>User Experience</h4>
+            <p>Clear feedback and confirmation dialogs prevent accidental data loss.</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="ion-text-center ion-margin-top ion-margin-bottom">
+    <ion-note>
+      This analysis fulfills ULO 4: Analyse and explain privacy and security requirements specific to mobile applications.
+    </ion-note>
+  </div>
+</ion-content>
